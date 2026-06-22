@@ -17,7 +17,7 @@ https://human-silver-c33ulk6a.edgeone.dev/
 
 ---
 
-## 参考
+## 参考(要件)
 - ﻿﻿使用したライブラリ： MapLibre GL Js
 - ﻿﻿ベースマップ： OpenEreeMap（ https://tiles.openfreemap.org/styles/1iberty ）
 - ﻿﻿3D表現： fi11-extrusionを使用し、ビルディングデータを立体的に表示
