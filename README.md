@@ -1,7 +1,7 @@
 #  ワールドカップの歴代優勝国×観光地に関する3Dストーリーテリングマップ
 
 ## 公開URL 
-https://human-silver-c33ulk6a.edgeone.dev/
+https://inadayuka.github.io/Design2/
 
 ## 概要
 - **観光地やその国の優勝回数、有名選手**をテーマとしたストーリーテリング
