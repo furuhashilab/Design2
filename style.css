@@ -1,0 +1,511 @@
+/* =========================================
+   World Cup Journey — 3D Storytelling Map
+   Style: Sports HUD × Dark Night Pitch
+   ========================================= */
+
+:root {
+  --bg:        #06080F;
+  --surface:   #0D1221;
+  --surface2:  #141929;
+  --green:     #00C878;
+  --green-dim: #007A4B;
+  --gold:      #FFD700;
+  --gold-dim:  #A07800;
+  --white:     #F0F4FF;
+  --muted:     #6B7A99;
+  --accent:    #FF4560;
+
+  --font-display: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+  --font-cond:    'Barlow Condensed', sans-serif;
+  --font-body:    'Noto Sans JP', sans-serif;
+
+  --panel-w: 340px;
+  --radius:  4px;
+  --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* ── マップ ── */
+#map {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+
+/* ── バックグラウンドグレイン ── */
+.bg-grain {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.6;
+}
+
+/* ── HUDオーバーレイ ── */
+.hud-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── ヘッダー ── */
+.hud-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 16px;
+  background: linear-gradient(180deg, rgba(6,8,15,0.92) 0%, rgba(6,8,15,0) 100%);
+  pointer-events: none;
+}
+
+.hud-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-trophy {
+  font-size: 22px;
+  filter: drop-shadow(0 0 6px var(--gold));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.logo-main {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--white);
+  text-shadow: 0 0 20px rgba(255,215,0,0.4);
+}
+
+.logo-sub {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.hud-event {
+  pointer-events: auto;
+}
+
+.event-label {
+  font-family: var(--font-cond);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid var(--green-dim);
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  background: rgba(0,200,120,0.08);
+}
+
+/* ── サイドパネル ── */
+.side-panel {
+  position: absolute;
+  top: 72px;
+  left: 16px;
+  width: var(--panel-w);
+  background: linear-gradient(160deg, rgba(13,18,33,0.94) 0%, rgba(6,8,15,0.88) 100%);
+  border: 1px solid rgba(255,215,0,0.12);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 18px 20px 20px;
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.side-panel.transitioning {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+.panel-scene-num {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.scene-current {
+  font-size: 28px;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.scene-sep { color: var(--muted); margin: 0 2px; }
+
+.panel-flag {
+  font-size: 32px;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.panel-country {
+  font-family: var(--font-display);
+  font-size: 36px;
+  letter-spacing: 3px;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.panel-landmark {
+  font-family: var(--font-cond);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 14px;
+}
+
+.panel-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
+}
+
+.divider-trophy {
+  font-size: 14px;
+  filter: grayscale(0.3);
+}
+
+.panel-wins-label,
+.panel-players-label {
+  font-family: var(--font-cond);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.panel-wins {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.panel-players {
+  font-size: 12px;
+  color: var(--white);
+  opacity: 0.85;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.panel-description {
+  font-size: 12px;
+  color: var(--white);
+  opacity: 0.75;
+  line-height: 1.7;
+  margin-bottom: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+}
+
+.panel-charm {
+  font-size: 11px;
+  color: var(--green);
+  opacity: 0.8;
+  line-height: 1.7;
+  font-style: italic;
+  padding-left: 8px;
+  border-left: 2px solid var(--green-dim);
+}
+
+/* ── プログレスバー ── */
+.progress-bar-container {
+  position: absolute;
+  bottom: 64px;
+  left: 16px;
+  right: 16px;
+  pointer-events: none;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+.progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+  background: var(--gold);
+  opacity: 1;
+  transform: scale(1.4);
+  box-shadow: 0 0 6px var(--gold);
+}
+
+.progress-dot.done {
+  background: var(--green);
+  opacity: 0.7;
+}
+
+.progress-track {
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-dim), var(--gold));
+  border-radius: 1px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* ── コントロール ── */
+.controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.ctrl-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,215,0,0.25);
+  background: rgba(13,18,33,0.85);
+  color: var(--white);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.ctrl-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 12px rgba(255,215,0,0.3);
+}
+
+.ctrl-play {
+  width: 48px;
+  height: 48px;
+  border-color: rgba(0,200,120,0.4);
+  font-size: 11px;
+  letter-spacing: -2px;
+}
+
+.ctrl-play.playing {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 14px rgba(0,200,120,0.35);
+}
+
+.ctrl-play.paused {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── カウントダウンリング ── */
+.countdown-ring-wrap {
+  position: absolute;
+  bottom: 14px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+}
+
+.countdown-ring {
+  width: 44px;
+  height: 44px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 2;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 113;
+  stroke-dashoffset: 113;
+  transition: stroke-dashoffset 0.1s linear;
+  filter: drop-shadow(0 0 3px var(--gold));
+}
+
+/* ── カスタムポップアップ ── */
+.custom-popup {
+  position: fixed;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(8px);
+}
+
+.custom-popup.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.popup-inner {
+  background: linear-gradient(135deg, rgba(13,18,33,0.96), rgba(6,8,15,0.92));
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  min-width: 160px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.15);
+  position: relative;
+}
+
+.popup-inner::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px; height: 6px;
+  background: var(--gold);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.popup-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-align: center;
+}
+
+.popup-landmark {
+  font-family: var(--font-cond);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--green);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ── ローディング画面 ── */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-inner {
+  text-align: center;
+}
+
+.loading-ball {
+  font-size: 48px;
+  animation: spin 1.4s linear infinite;
+  display: block;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 6px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.loading-bar {
+  width: 200px;
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--gold));
+  transition: width 0.4s ease;
+}
+
+/* ── MapLibre デフォルトUI非表示 ── */
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-top-right,
+.maplibregl-ctrl-top-left {
+  display: none !important;
+}
+
+/* ── スクロールバー ── */
+::-webkit-scrollbar { display: none; }
